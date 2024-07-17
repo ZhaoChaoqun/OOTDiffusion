@@ -24,7 +24,7 @@ import torch.nn.functional as F
 from transformers import AutoProcessor, CLIPVisionModelWithProjection
 from transformers import CLIPTextModel, CLIPTokenizer
 
-VIT_PATH = "../checkpoints/clip-vit-large-patch14"
+VIT_PATH = "openai/clip-vit-large-patch14"
 VAE_PATH = "../checkpoints/ootd"
 UNET_PATH = "../checkpoints/ootd/ootd_hd/checkpoint-36000"
 MODEL_PATH = "../checkpoints/ootd"
@@ -63,7 +63,9 @@ class OOTDiffusionHD:
             use_safetensors=True,
             safety_checker=None,
             requires_safety_checker=False,
-        ).to(self.gpu_id)
+        )
+        self.pipe.enable_sequential_cpu_offload()
+        # self.pipe = self.pipe.to(self.gpu_id)
 
         self.pipe.scheduler = UniPCMultistepScheduler.from_config(self.pipe.scheduler.config)
         
